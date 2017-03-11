@@ -1,0 +1,21 @@
+
+
+{%extends 'NotepadBundle:pages:layout.html.twig'%}
+	
+{%block block_content%}
+	
+	{%if(type=='modify') %}
+		<h1>Modify Note</h1>
+	{%elseif(type=='create')%}
+		<h1>Create Note</h1>
+	{%endif%}
+	
+	{%form_theme form 'bootstrap_3_layout.html.twig'%}
+	{{form_start(form)}}
+		{{form_widget(form)}}
+	{{form_end(form)}}
+	
+{%endblock%}
+
+
+

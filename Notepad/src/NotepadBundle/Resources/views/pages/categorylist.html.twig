@@ -1,0 +1,53 @@
+{%extends 'NotepadBundle:pages:layout.html.twig'%}
+	
+{%block block_content%}
+	<!-- Main component for a primary marketing message or call to action -->
+	<div class="panel panel-info">	
+		
+		<div class="panel-heading">
+			Category list
+			<!--<i>category.categoryId.label|e</i>-->
+		</div>
+	
+		<div class="panel-body">
+			<table style="width:100%">
+				<tr>
+					<th>Category id</th>
+					<th>Category Name</th>
+					<th></th>
+				</tr>
+				{%for category in categories %}
+				<tr>
+					<td>{{category.id|e}}</td>
+					<td>{{category.label|e}}</td>
+					<td>
+						<div class="pull-right">
+							<a role="button" class="btn btn-success btn-clear" href="{{path('editcategory', {'id':category.id})}}">Edit Category</a>
+							<a role="button" class="btn btn-danger btn-clear" href="{{path('deletecategory', {'id':category.id})}}">Delete Category</a>
+						</div>
+					</td>
+				</tr>
+				{%endfor%}
+			</table>
+		</div>
+	
+		<!--
+		<div class="panel-body">
+			{%for category in categories %}
+				<div class="panel-body">
+					<div class="clearfix"></div>
+					{{category.label|e}}
+					<div class="pull-right">
+						<a role="button" class="btn btn-success btn-clear" href="{{path('editcategory', {'id':category.id})}}">Edit Category</a>
+						<a role="button" class="btn btn-danger btn-clear" href="{{path('deletecategory', {'id':category.id})}}">Delete Category</a>
+						
+					</div>
+				</div>
+			{% endfor %}
+		</div>-->
+	</div>	
+		
+{%endblock%}
+
+
+
