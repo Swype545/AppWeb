@@ -68,24 +68,23 @@ class DefaultController extends Controller
 			$preNotes = $em->getRepository('NotepadBundle:Note')->findAll();
 			$notes = [];
 			
-			//Chemin a trouver: /content/+$search
+			//Chemin a trouver: /content/tag
 			foreach($preNotes as $note)
 			{
 				$crawler = new Crawler();
 				$crawler->addXmlContent('<content>'.$note->getContent().'</content>');
 				$tag = null;
-				$body = $crawler->filterXPath('//content/'.$search);
+				$body = $crawler->filterXPath('//content/tag');
 				if($body->count() > 0){
-					$tag = $body->nodeName();
+					$tag = $body->text();
 				}
 
-				if($tag != null)
+				if($tag == $search)
 				{
 					$notes[]=$note;
 				}
 			}
-			
-			//$notes = $em->getRepository('NotepadBundle:Note')->findAll();	
+		
 		}else{
 			$notes = $em->getRepository('NotepadBundle:Note')->findAll();
 		}
