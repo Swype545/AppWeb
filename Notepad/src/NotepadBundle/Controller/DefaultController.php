@@ -16,6 +16,8 @@ use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
+use Symfony\Component\DomCrawler\Crawler;
+
 //use Symfony\Component\Validator\Constraints\DateTime;
 
 
@@ -40,6 +42,7 @@ class DefaultController extends Controller
      */
 	 
 	//Accès à cette page: http://localhost/AppWeb/Notepad/web/app_dev.php/note/notelist
+    
     public function notelistAction(Request $request)
     {
 		
@@ -47,33 +50,49 @@ class DefaultController extends Controller
 		$form = $this->createFormBuilder()
 			->add('search', SearchType::class, array(
 			'label'=> false,
+			'required'=>false,
 			'attr' => array(
 				'placeholder'=>'search')))
 			->getForm();
-		
-		$form->handleRequest($request);
-		
 		//Ici se trouve l'ensemble du controle pour la page "notelist"
 		//Recupération de l'ensemble des éléments de ma base de donnée
-		try{
-			$em = $this->getDoctrine()->getManager();
+		$form->handleRequest($request);
+		$em = $this->getDoctrine()->getManager();
+		
+
+		//Si la zone de recherche n'est pas vide
+		$search = $form->getData()['search'];
+
+		if(isset($search) && !empty($search))
+		{
+			$preNotes = $em->getRepository('NotepadBundle:Note')->findAll();
+			$notes = [];
 			
-			if($form->isSubmitted() && $form->isValid())
+			//Chemin a trouver: /content/+$search
+			foreach($preNotes as $note)
 			{
-				$search = $form->getData();
-				if(isset($search) && $search != "")
-				{
-					
+				$crawler = new Crawler();
+				$crawler->addXmlContent('<content>'.$note->getContent().'</content>');
+				$tag = null;
+				$body = $crawler->filterXPath('//content/'.$search);
+				if($body->count() > 0){
+					$tag = $body->nodeName();
 				}
-				
-				//$notes = $em->getRepository('NotepadBundle:Note')->findAll();	
-			}else{
-				$notes = $em->getRepository('NotepadBundle:Note')->findAll();
+
+				if($tag != null)
+				{
+					$notes[]=$note;
+				}
 			}
-				
-		}catch(Exception $e){
-			throw $this->createNotFoundException('Problème lors de la récupération des notes');
+			
+			//$notes = $em->getRepository('NotepadBundle:Note')->findAll();	
+		}else{
+			$notes = $em->getRepository('NotepadBundle:Note')->findAll();
 		}
+				
+		/*}catch(Exception $e){
+			throw $this->createNotFoundException('Problème lors de la récupération des notes');
+		}*/
 
 		return $this->render('NotepadBundle:Pages:notelist.html.twig', array(
 			'notes' => $notes,
@@ -191,9 +210,12 @@ class DefaultController extends Controller
 		if ($form->isSubmitted() && $form->isValid()) {
 			$note = $form->getData();
 			try{
-				$em = $this->getDoctrine()->getManager();
-				$em->persist($note);
-				$em->flush();
+				if($note->isValid())
+				{
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($note);
+					$em->flush();
+				}
 				return $this->redirectToRoute('notelist');
 			}catch(Exception $e){
 				throw $this->createNotFoundException('Problème lors de la validation d\'une note');
