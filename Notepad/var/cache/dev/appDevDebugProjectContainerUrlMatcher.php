@@ -115,8 +115,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
                 if (0 === strpos($pathinfo, '/note/API/notes/show')) {
                     // show_notes
                     if ($pathinfo === '/note/API/notes/showAll') {
-                        if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
-                            $allow = array_merge($allow, array('GET', 'HEAD'));
+                        if (!in_array($this->context->getMethod(), array('OPTIONS', 'GET', 'HEAD'))) {
+                            $allow = array_merge($allow, array('OPTIONS', 'GET', 'HEAD'));
                             goto not_show_notes;
                         }
 
@@ -126,8 +126,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
                     // show_note
                     if ($pathinfo === '/note/API/notes/showOne') {
-                        if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
-                            $allow = array_merge($allow, array('GET', 'HEAD'));
+                        if (!in_array($this->context->getMethod(), array('OPTIONS', 'GET', 'HEAD'))) {
+                            $allow = array_merge($allow, array('OPTIONS', 'GET', 'HEAD'));
                             goto not_show_note;
                         }
 
@@ -139,8 +139,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
                 // show_categories
                 if ($pathinfo === '/note/API/categories/showAll') {
-                    if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
-                        $allow = array_merge($allow, array('GET', 'HEAD'));
+                    if (!in_array($this->context->getMethod(), array('GET', 'OPTIONS', 'HEAD'))) {
+                        $allow = array_merge($allow, array('GET', 'OPTIONS', 'HEAD'));
                         goto not_show_categories;
                     }
 
@@ -151,8 +151,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
                 if (0 === strpos($pathinfo, '/note/API/notes')) {
                     // API_createNote
                     if ($pathinfo === '/note/API/notes/create') {
-                        if ($this->context->getMethod() != 'POST') {
-                            $allow[] = 'POST';
+                        if (!in_array($this->context->getMethod(), array('OPTIONS', 'POST'))) {
+                            $allow = array_merge($allow, array('OPTIONS', 'POST'));
                             goto not_API_createNote;
                         }
 
@@ -162,8 +162,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
                     // API_editNote
                     if ($pathinfo === '/note/API/notes/edit') {
-                        if ($this->context->getMethod() != 'PUT') {
-                            $allow[] = 'PUT';
+                        if (!in_array($this->context->getMethod(), array('OPTIONS', 'PUT'))) {
+                            $allow = array_merge($allow, array('OPTIONS', 'PUT'));
                             goto not_API_editNote;
                         }
 
@@ -173,8 +173,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
                     // API_deleteNote
                     if ($pathinfo === '/note/API/notes/delete') {
-                        if ($this->context->getMethod() != 'DELETE') {
-                            $allow[] = 'DELETE';
+                        if (!in_array($this->context->getMethod(), array('OPTIONS', 'DELETE'))) {
+                            $allow = array_merge($allow, array('OPTIONS', 'DELETE'));
                             goto not_API_deleteNote;
                         }
 
@@ -187,8 +187,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
                 if (0 === strpos($pathinfo, '/note/API/categories')) {
                     // API_createCategory
                     if ($pathinfo === '/note/API/categories/create') {
-                        if ($this->context->getMethod() != 'POST') {
-                            $allow[] = 'POST';
+                        if (!in_array($this->context->getMethod(), array('OPTIONS', 'POST'))) {
+                            $allow = array_merge($allow, array('OPTIONS', 'POST'));
                             goto not_API_createCategory;
                         }
 
@@ -198,8 +198,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
                     // API_editCategory
                     if ($pathinfo === '/note/API/categories/edit') {
-                        if ($this->context->getMethod() != 'PUT') {
-                            $allow[] = 'PUT';
+                        if (!in_array($this->context->getMethod(), array('OPTIONS', 'PUT'))) {
+                            $allow = array_merge($allow, array('OPTIONS', 'PUT'));
                             goto not_API_editCategory;
                         }
 
@@ -209,8 +209,8 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
                     // API_deleteCategory
                     if ($pathinfo === '/note/API/categories/delete') {
-                        if ($this->context->getMethod() != 'DELETE') {
-                            $allow[] = 'DELETE';
+                        if (!in_array($this->context->getMethod(), array('OPTIONS', 'DELETE'))) {
+                            $allow = array_merge($allow, array('OPTIONS', 'DELETE'));
                             goto not_API_deleteCategory;
                         }
 

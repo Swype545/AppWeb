@@ -27,18 +27,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class APIController extends Controller
 {
-    private function corsFix(){
-		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
-		{
-			$response = new Response();
-			$response->headers->set('Content-Type', 'application/text');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			return $response;
-		}
-	}
-	
-	/**
+    /**
      * @Route("/API/reset")
      */
     public function indexAction()
@@ -48,7 +37,7 @@ class APIController extends Controller
 	
 	/**
      * @Route("API/notes/showAll", name="show_notes")
-	 * @Method({"OPTIONS", "GET"})
+	 * @Method({"GET"})
      */
 
 	//---------------------------------------------------------------
@@ -59,8 +48,6 @@ class APIController extends Controller
 	//link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/notes/showAll
     public function getNotesAction(request $request)
     {
-		$this->corsFix();
-		
 		try{
 			$em = $this->getDoctrine()->getManager();
 			$notes = $em->getRepository('NotepadBundle:Note')->findAll();
@@ -77,25 +64,17 @@ class APIController extends Controller
 			];
 		}
 		
-		$response = new JsonResponse($formatted);
-		$response->headers->set('Content-Type', 'application/json');
-		$response->headers->set('Access-Control-Allow-Origin', '*');
-		$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-		
-		return $response;
+		return new JsonResponse($formatted);
     }
 	
 	/**
      * @Route("API/notes/showOne", name="show_note")
-	 * @Method({"OPTIONS", "GET"})
+	 * @Method({"GET"})
      */
 
 	//link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/notes/showOne?id=2
     public function getNoteAction(request $request)
     {
-		$this->corsFix();
-		
-		
 		$encoders = array(new XmlEncoder(), new JsonEncoder());
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
@@ -114,29 +93,19 @@ class APIController extends Controller
 			'content'=>$note->getContent(),
 			'category'=>$note->getCategoryId()->getLabel(),
 		];		
-		
-		
-		$response = new JsonResponse($formatted);
-		$response->headers->set('Content-Type', 'application/json');
-		$response->headers->set('Access-Control-Allow-Origin', '*');
-		$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-		
-		return $response;
+		return new JsonResponse($formatted);
 		
     }
 	
 	/**
      * @Route("/API/categories/showAll", name="show_categories")
-	 * @Method({"GET", "OPTIONS"})
+	 * @Method({"GET"})
      */
 
 	//link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/categories/showAll
     public function getCategoriesAction(request $request)
     {
-        $this->corsFix();
-		
-		
-		//Recupératio nde toutes les catégories
+        //Recupératio nde toutes les catégories
         try{
 			$em = $this->getDoctrine()->getManager();
 			$categories = $em->getRepository('NotepadBundle:Category')->findAll();
@@ -151,12 +120,7 @@ class APIController extends Controller
 			];
 		}
 		
-		$response = new JsonResponse($formatted);
-		$response->headers->set('Content-Type', 'application/json');
-		$response->headers->set('Access-Control-Allow-Origin', '*');
-		$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-		
-		return $response;
+		return new JsonResponse($formatted);
     }
 	
 	//---------------------------------------------------------------
@@ -166,7 +130,7 @@ class APIController extends Controller
 
 	/**
      * @Route("/API/notes/create", name="API_createNote")
-	 * @Method({"OPTIONS", "POST"})
+	 * @Method({"POST"})
      */
 
 	//link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/notes/create
@@ -180,9 +144,6 @@ class APIController extends Controller
 	*/
     public function createNoteAction(request $request)
     {
-		$this->corsFix();
-		
-		
 		//recuperation des éléments du JSON envoyé
 		$em = $this->getDoctrine()->getManager();
 		$json= $request->getContent();
@@ -199,44 +160,24 @@ class APIController extends Controller
        
         $category = $em->getRepository('NotepadBundle:Category')->find($categoryId);
         if (!$category) {
-            $response = new JsonResponse("this category doesn't exist");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("this category doesn't exist");
         }
 
         $note->setCategoryId($category);
 		try {
             $em->persist($note);
             $em->flush();
-            $response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("success");
         } catch(Exception $e) {
-            $response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("error");
         }
 		
-		$response = new JsonResponse($formatted);
-		$response->headers->set('Content-Type', 'application/json');
-		$response->headers->set('Access-Control-Allow-Origin', '*');
-		$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-		
-		return $response;
+		return new JsonResponse($formatted);
     }
-	
-	/**
+
+    /**
      * @Route("/API/notes/edit", name="API_editNote")
-     * @Method({"OPTIONS", "PUT"})
+     * @Method("PUT")
      */
 
     //link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/notes/edit
@@ -251,10 +192,7 @@ class APIController extends Controller
 	*/
     public function editNoteAction(Request $request)
     {
-        $this->corsFix();
-		
-		
-		//Recupération des éléments du JSON envoyé
+        //Recupération des éléments du JSON envoyé
         $em = $this->getDoctrine()->getManager();
         $json = $request->getContent();
         $data = json_decode($json, true);
@@ -267,12 +205,7 @@ class APIController extends Controller
         //recupération de la note (avec son ID)
         $note = $em->getRepository('NotepadBundle:Note')->find($id);
         if (!$note) {
-            $response = new JsonResponse("this note doesn't exist");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("this note doesn't exist");
         }
 
         //Updating des info de la note
@@ -280,81 +213,48 @@ class APIController extends Controller
         $note->setContent($content);
         $category = $em->getRepository('NotepadBundle:Category')->find($categoryId);
         if (!$category) {
-            $response = new JsonResponse("category not found");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("category not found");
         }
 
         $note->setCategoryId($category);
         try {
             $em->flush();
-            $response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("success");
         } catch(Exception $e) {
-            $response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("error");
         }
     }
 
      /**
      * @Route("/API/notes/delete", name="API_deleteNote")
-     * @Method({"OPTIONS", "DELETE"})
+     * @Method("DELETE")
      */
 
      //link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/notes/delete?id=2
     public function deleteNoteAction(Request $request)
     {
-        $this->corsFix();
-		
-		$em = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         
         //Recupération de l'ID
         $id = $request->query->get('id');
         $note = $em->getRepository('NotepadBundle:Note')->find($id);
         if (!$note) {
-            
-			$response = new JsonResponse("note not found");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("note not found");
         }
 
         //Delete de la note associée
         try {
             $em->remove($note);
             $em->flush();
-			$response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("success");
         } catch(Exception $e) {
-			$response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("error");
         }
     }
 
     /**
      * @Route("/API/categories/create", name="API_createCategory")
-     * @Method({"OPTIONS", "POST"})
+     * @Method("POST")
      */
 
     //link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/categories/create
@@ -366,9 +266,7 @@ class APIController extends Controller
 	*/
     public function newCategoryAction(Request $request)
     {
-       $this->corsFix();
-
-	   //Recupération des informations
+        //Recupération des informations
         $em = $this->getDoctrine()->getManager();
         $json = $request->getContent();
         $data = json_decode($json, true);
@@ -380,25 +278,15 @@ class APIController extends Controller
         try {
             $em->persist($category);
             $em->flush();
-			$response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("success");
         } catch(Exception $e) {
-			$response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("error");
         }
     }
 
     /**
      * @Route("/API/categories/edit", name="API_editCategory")
-     * @Method({"OPTIONS", "PUT"})
+     * @Method("PUT")
      */
 
       //link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/categories/edit
@@ -411,8 +299,7 @@ class APIController extends Controller
 	*/
     public function editCategoryAction(Request $request)
     {   
-        $this->corsFix();
-		
+        
     	//Recupération des infos
         $em = $this->getDoctrine()->getManager();
         $json = $request->getContent();
@@ -422,74 +309,41 @@ class APIController extends Controller
         $label = $data['label'];
         $category = $em->getRepository('NotepadBundle:Category')->find($id);
         if (!$category) {
-            $response = new JsonResponse("category not found");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("category not found");
         }
         $category->setLabel($label);
         try {
             $em->flush();
-            $response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("success");
         } catch(Exception $e) {
-			$response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("error");
         }
     }
 
     /**
      * @Route("/API/categories/delete", name="API_deleteCategory")
-     * @Method({"OPTIONS", "DELETE"})
+     * @Method("DELETE")
      */
 
      //link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/categories/delete?id=2
     public function delCategoryAction(Request $request)
     {
-        $this->corsFix();
-		
-		//Recupération de l'ID en paramètre
+        //Recupération de l'ID en paramètre
         $em = $this->getDoctrine()->getManager();
         $id = $request->query->get('id');
         //recupération en DB
         $category = $em->getRepository('NotepadBundle:Category')->find($id);
         if (!$category) {
-			$response = new JsonResponse("category not found");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("category not found");
         }
         
         //suppression de la categorie
         try {
             $em->remove($category);
             $em->flush();
-			$response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
-
+            return new Response("success");
         } catch(Exception $e) {
-			$response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-			
-			return $response;
+            return new Response("error");
         }
     }
 	
