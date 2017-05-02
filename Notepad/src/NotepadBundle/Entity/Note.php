@@ -48,7 +48,7 @@ class Note
 	 * @ORM\ManyToOne(targetEntity="Category")
 	 * @ORM\JoinColumn(name="categoryId", referencedColumnName="id")
      */
-    private $categoryId;
+    private $category;
 
 	//Constructeur de mon objet avec la date actuelle prédéfinie
 	public function __construct(){
@@ -138,27 +138,27 @@ class Note
     }
 
     /**
-     * Set categoryId
+     * Set category
      *
-     * @param integer $categoryId
+     * @param integer $category
      *
      * @return Note
      */
-    public function setCategoryId($categoryId)
+    public function setCategory($category)
     {
-        $this->categoryId = $categoryId;
+        $this->category = $category;
 
         return $this;
     }
 
     /**
-     * Get categoryId
+     * Get category
      *
      * @return int
      */
-    public function getCategoryId()
+    public function getCategory()
     {
-        return $this->categoryId;
+        return $this->category;
     }
 	
 	/**
