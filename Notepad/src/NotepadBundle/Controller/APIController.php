@@ -258,13 +258,16 @@ class APIController extends Controller
 	*/
     public function editNoteAction(Request $request)
     {
+
         $this->corsFix();
 		
 		
 		//Recupération des éléments du JSON envoyé
         $em = $this->getDoctrine()->getManager();
-        $json = $request->getContent();
-        $data = json_decode($json, true);
+        
+       	$resp = new Response();
+		$json= $request->getContent();
+		$data=json_decode($json, true);
         
         $id = $data['id'];
         $title = $data['title'];
@@ -274,12 +277,16 @@ class APIController extends Controller
         //recupération de la note (avec son ID)
         $note = $em->getRepository('NotepadBundle:Note')->find($id);
         if (!$note) {
-            $response = new JsonResponse("this note doesn't exist");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+            $resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "This note doesn't exist");
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
         }
 
         //Updating des info de la note
@@ -287,28 +294,42 @@ class APIController extends Controller
         $note->setContent($content);
         $category = $em->getRepository('NotepadBundle:Category')->find($category);
         if (!$category) {
-            $response = new JsonResponse("category not found");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+             $resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "This category doesn't exist");
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
         }
 
         $note->setCategory($category);
         try {
             $em->flush();
-            $response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+            $resp->setStatusCode(Response::HTTP_OK);
+            $response = array('success' => true);
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+            return $resp;
         } catch(Exception $e) {
-            $response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+             $resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "error");
+			
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
 			
 			return $response;
         }
@@ -325,37 +346,52 @@ class APIController extends Controller
         $this->corsFix();
 		
 		$em = $this->getDoctrine()->getManager();
-        
+        $resp = new Response();
+
         //Recupération de l'ID
         $id = $request->query->get('id');
         $note = $em->getRepository('NotepadBundle:Note')->find($id);
         if (!$note) {
             
-			$response = new JsonResponse("note not found");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			$resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "Note not found");
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
         }
 
         //Delete de la note associée
         try {
             $em->remove($note);
             $em->flush();
-			$response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
 			
-			return $response;
+			$resp->setStatusCode(Response::HTTP_OK);
+            $response = array('success' => true);
+			
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+            return $resp;
+			
         } catch(Exception $e) {
-			$response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			$resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "Error");
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
         }
     }
 
@@ -387,7 +423,7 @@ class APIController extends Controller
         $category = new Category();
         $category->setLabel($label);
         try {
-		   $em->persist($category);
+		   	$em->persist($category);
             $em->flush();
 			$resp->setStatusCode(Response::HTTP_OK);
             $response = array('success' => true);
@@ -433,36 +469,50 @@ class APIController extends Controller
 		
     	//Recupération des infos
         $em = $this->getDoctrine()->getManager();
-        $json = $request->getContent();
-        $data = json_decode($json, true);
+        
+        $resp = new Response();
+		$json= $request->getContent();
+		$data=json_decode($json, true);
         
         $id = $data['id'];
         $label = $data['label'];
         $category = $em->getRepository('NotepadBundle:Category')->find($id);
         if (!$category) {
-            $response = new JsonResponse("category not found");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+            $resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "Category Not Found");
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
         }
         $category->setLabel($label);
         try {
             $em->flush();
-            $response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			$resp->setStatusCode(Response::HTTP_OK);
+            $response = array('success' => true);
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+            return $resp;
         } catch(Exception $e) {
-			$response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			$resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "Error");
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
         }
     }
 
@@ -477,37 +527,64 @@ class APIController extends Controller
         $this->corsFix();
 		
 		//Recupération de l'ID en paramètre
+		$resp = new Response();
         $em = $this->getDoctrine()->getManager();
         $id = $request->query->get('id');
         //recupération en DB
+
+        if(!$id){
+        	$resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "id required");
+			
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
+        }
+
         $category = $em->getRepository('NotepadBundle:Category')->find($id);
         if (!$category) {
-			$response = new JsonResponse("category not found");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			$resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "Category not found");
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
         }
         
         //suppression de la categorie
         try {
             $em->remove($category);
             $em->flush();
-			$response = new JsonResponse("success");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			$resp->setStatusCode(Response::HTTP_OK);
+            $response = array('success' => true);
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+            return $resp;
 
         } catch(Exception $e) {
-			$response = new JsonResponse("error");
-			$response->headers->set('Content-Type', 'application/json');
-			$response->headers->set('Access-Control-Allow-Origin', '*');
-			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			$resp->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response = array('error' => "Error");
 			
-			return $response;
+            $jsonContent = json_encode($response);
+            $resp->setContent($jsonContent);
+			$resp->headers->set('Content-Type', 'application/json');
+			$resp->headers->set('Access-Control-Allow-Origin', '*');
+			$resp->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			
+			return $resp;
         }
     }
 	
