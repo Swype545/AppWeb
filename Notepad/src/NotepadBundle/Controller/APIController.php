@@ -59,7 +59,15 @@ class APIController extends Controller
 	//link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/notes/showAll
     public function getNotesAction(request $request)
     {
-		$this->corsFix();
+		//$this->corsFix();
+		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
 		
 		try{
 			$em = $this->getDoctrine()->getManager();
@@ -93,8 +101,15 @@ class APIController extends Controller
 	//link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/notes/showOne?id=2
     public function getNoteAction(request $request)
     {
-		$this->corsFix();
-		
+		//$this->corsFix();
+		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
 		
 		$encoders = array(new XmlEncoder(), new JsonEncoder());
 		$normalizers = array(new ObjectNormalizer());
@@ -128,8 +143,15 @@ class APIController extends Controller
 	//link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/categories/showAll
     public function getCategoriesAction(request $request)
     {
-        $this->corsFix();
-		
+        //$this->corsFix();
+		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
 		
 		//Recupératio nde toutes les catégories
         try{
@@ -176,8 +198,15 @@ class APIController extends Controller
 	*/
     public function createNoteAction(request $request)
     {
-		$this->corsFix();
-		
+		//$this->corsFix();
+		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
 		
 		//recuperation des éléments du JSON envoyé
 		$em = $this->getDoctrine()->getManager();
@@ -259,8 +288,15 @@ class APIController extends Controller
     public function editNoteAction(Request $request)
     {
 
-        $this->corsFix();
-		
+        //$this->corsFix();
+		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
 		
 		//Recupération des éléments du JSON envoyé
         $em = $this->getDoctrine()->getManager();
@@ -343,7 +379,18 @@ class APIController extends Controller
      //link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/notes/delete?id=2
     public function deleteNoteAction(Request $request)
     {
-        $this->corsFix();
+        //$this->corsFix();
+		
+		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
+		
+		
 		
 		$em = $this->getDoctrine()->getManager();
         $resp = new Response();
@@ -354,7 +401,7 @@ class APIController extends Controller
         if (!$note) {
             
 			$resp->setStatusCode(Response::HTTP_BAD_REQUEST);
-            $response = array('error' => "Note not found");
+            $response = array('error' => "Note not found, test");
 			
             $jsonContent = json_encode($response);
             $resp->setContent($jsonContent);
@@ -409,8 +456,16 @@ class APIController extends Controller
 	*/
     public function newCategoryAction(Request $request)
     {
-       $this->corsFix();
-	   
+       //$this->corsFix();
+	   if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
+		
 	   //Recupération des informations
         $em = $this->getDoctrine()->getManager();
         
@@ -465,7 +520,16 @@ class APIController extends Controller
 	*/
     public function editCategoryAction(Request $request)
     {   
-        $this->corsFix();
+        //$this->corsFix();
+		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
+		
 		
     	//Recupération des infos
         $em = $this->getDoctrine()->getManager();
@@ -524,7 +588,16 @@ class APIController extends Controller
      //link: http://localhost/AppWeb/Notepad/web/app_dev.php/note/API/categories/delete?id=2
     public function delCategoryAction(Request $request)
     {
-        $this->corsFix();
+        //$this->corsFix();
+		if($_SERVER['REQUEST_METHOD'] == 'OPTIONS')
+		{
+			$response = new Response();
+			$response->headers->set('Content-Type', 'application/text');
+			$response->headers->set('Access-Control-Allow-Origin', '*');
+			$response->headers->set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+			return $response;
+		}
+		
 		
 		//Recupération de l'ID en paramètre
 		$resp = new Response();
